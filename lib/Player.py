@@ -31,8 +31,6 @@ class Player:
         self.camera.setPos(0, 0, PLAYER_EYE_HEIGHT)
         self.camera.setHpr(0, 0, 0)
 
-        self.node.setH(180)
-
         # ------------------------------------------------------------
         # MOVEMENT
         # ------------------------------------------------------------
@@ -113,6 +111,11 @@ class Player:
         inputState.watchWithModifiers("back", "s")
         inputState.watchWithModifiers("left", "a")
         inputState.watchWithModifiers("right", "d")
+
+        inputState.watchWithModifiers("forward2", "arrow_up")
+        inputState.watchWithModifiers("back2", "arrow_down")
+        inputState.watchWithModifiers("left2", "arrow_left")
+        inputState.watchWithModifiers("right2", "arrow_right")
 
         # SPACE = interact
         self.base.accept("space", self._try_use_door)
@@ -195,6 +198,9 @@ class Player:
             return
 
         win = self.base.win
+        if not win:
+            return
+
         cx = win.getXSize() // 2
         cy = win.getYSize() // 2
 
@@ -202,15 +208,20 @@ class Player:
         dx = md.getX() - cx
         dy = md.getY() - cy
 
+        # Recenter immediately
         win.movePointer(0, cx, cy)
 
-        sensitivity = 0.002
+        sensitivity = 0.15
         max_pitch = 75.0
 
-        self.node.setH(self.node.getH() - dx * sensitivity * 100)
-        self.pitch -= dy * sensitivity * 100
+        # Yaw
+        self.node.setH(self.node.getH() - dx * sensitivity)
+
+        # Pitch
+        self.pitch -= dy * sensitivity
         self.pitch = max(-max_pitch, min(max_pitch, self.pitch))
-        self.camera.setP(self.pitch)
+        self.node.setP(self.pitch)
+
 
     # ------------------------------------------------------------
     # MOVEMENT
@@ -218,15 +229,16 @@ class Player:
     def _movement(self, dt):
         direction = Vec3(0, 0, 0)
 
-        if inputState.isSet("forward"):
+        if inputState.isSet("forward") or inputState.isSet("forward2"):
             direction.y += 1
-        if inputState.isSet("back"):
+        if inputState.isSet("back") or inputState.isSet("back2"):
             direction.y -= 1
-        if inputState.isSet("left"):
+        if inputState.isSet("left") or inputState.isSet("left2"):
             direction.x -= 1
-        if inputState.isSet("right"):
+        if inputState.isSet("right") or inputState.isSet("right2"):
             direction.x += 1
 
         if direction.lengthSquared() > 0:
             direction.normalize()
             self.node.setPos(self.node, direction * self.speed * dt)
+

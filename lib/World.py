@@ -1,3 +1,4 @@
+import math
 from panda3d.core import (
     GeomVertexData,
     GeomVertexFormat,
@@ -46,6 +47,41 @@ def add_lighting(base):
     sun_np = base.render.attachNewNode(sun)
     sun_np.setHpr(45, -60, 0)
     base.render.setLight(sun_np)
+
+def compute_spawn_heading(map_data, tx, ty):
+    """
+    tx, ty = player tile coordinates (ints)
+    Returns heading in degrees.
+    """
+
+    h = len(map_data)
+    w = len(map_data[0])
+
+    def solid(x, y):
+        if x < 0 or y < 0 or x >= w or y >= h:
+            return True
+        return map_data[y][x] in SOLID_CHARS
+
+    # Check adjacent tiles
+    # (dx, dy) -> heading player should face if that side is blocked
+    checks = [
+        (0, 1, 180),   # wall north -> face south
+        (0, -1, 0),    # wall south -> face north
+        (1, 0, 270),   # wall east  -> face west
+        (-1, 0, 90),   # wall west  -> face east
+    ]
+
+    for dx, dy, heading in checks:
+        if solid(tx + dx, ty + dy):
+            return heading
+
+    # Fallback: face toward map center
+    cx = (w * TILE_SIZE) * 0.5
+    cy = (h * TILE_SIZE) * 0.5
+    px = (tx + 0.5) * TILE_SIZE
+    py = (ty + 0.5) * TILE_SIZE
+
+    return math.degrees(math.atan2(cx - px, cy - py))
 
 # ------------------------------------------------------------
 # WORLD BUILD

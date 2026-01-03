@@ -1,0 +1,18 @@
+{
+  "type": "mesh",
+  "scale": 1.0,
+  "y_offset": 0.0,
+  "hpr": [0, 0, 0],
+
+  "collision": {
+    "shape": "box",
+    "dims": [0.45, 0.45, 0.9],
+    "offset": [0.0, 0.0, 0.45],
+    "blocking": false
+  },
+
+  "render": {
+    "casts_shadow": false,
+    "two_sided": false
+  }
+}

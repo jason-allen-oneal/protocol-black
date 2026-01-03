@@ -4,7 +4,6 @@
 # . = empty space
 # # = wall
 # * = new wall
-# D = desk (wall-geometry)
 # $ = old locked door
 # @ = old unlocked door
 # - = new unlocked door

@@ -48,16 +48,15 @@ class HorrorGame(ShowBase):
         self.taskMgr.add(self.update, "update")
 
     def capture_mouse(self):
-        if self.mouse_captured:
-            return
-
-        if self.win is None:
+        if self.mouse_captured or not self.win:
             return
 
         props = WindowProperties()
         props.setCursorHidden(True)
-        props.setMouseMode(WindowProperties.M_relative)
+        props.setMouseMode(WindowProperties.M_absolute)
         self.win.requestProperties(props)
+
+        self.mouse_captured = True
 
     def release_mouse(self):
         if self.win is None:
@@ -67,7 +66,9 @@ class HorrorGame(ShowBase):
         props.setCursorHidden(False)
         props.setMouseMode(WindowProperties.M_absolute)
         self.win.requestProperties(props)
+
         self.mouse_captured = False
+
 
     def update(self, task):
         dt = globalClock.getDt()
